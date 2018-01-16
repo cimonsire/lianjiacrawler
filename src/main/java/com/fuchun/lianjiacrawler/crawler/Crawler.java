@@ -15,10 +15,8 @@ import java.util.Set;
 public class Crawler {
 
     public void run() {
-        Set<String> urls = new HashSet<>();
-        urls.add("https://cq.lianjia.com/ershoufang/rs/");
-
-        CompositePageProcessor ershoufangProcessor = new CompositePageProcessor(Site.me().setSleepTime(10000).setRetryTimes(3));
+        CompositePageProcessor ershoufangProcessor
+                = new CompositePageProcessor(Site.me().setSleepTime(10000).setRetryTimes(3));
 
         ershoufangProcessor.addSubPageProcessor(new ErshoufangListPageProcessor());
         ershoufangProcessor.addSubPageProcessor(new ErshoufangDetailPageProcessor());
@@ -27,7 +25,7 @@ public class Crawler {
         Spider.create(ershoufangProcessor)
                 .setDownloader(new ErshoufangListPageDownloader())
                 .addUrl("https://cq.lianjia.com/ershoufang/rs/")
-                .thread(5)
+                .thread(1)
                 .run();
 
 //        ershoufangDetailUrlSpider.get

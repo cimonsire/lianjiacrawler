@@ -13,8 +13,6 @@ public class Ershoufang {
 
     private Type type;
 
-    private float area;
-
     private String communityName;
 
     private Location location;
@@ -48,7 +46,7 @@ public class Ershoufang {
 
         private String road;
 
-        private String suppliement;
+        private String supplement;
     }
 
     @Data
