@@ -6,6 +6,7 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.stereotype.Component;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Request;
 import us.codecraft.webmagic.handler.SubPageProcessor;
@@ -14,6 +15,7 @@ import java.text.ParseException;
 import java.util.Date;
 
 @Slf4j
+@Component
 public class ErshoufangDetailPageProcessor implements SubPageProcessor {
     @Override
     public MatchOther processPage(Page page) {
@@ -38,7 +40,7 @@ public class ErshoufangDetailPageProcessor implements SubPageProcessor {
         ershoufang.setType(type);
 
         Element aroundInfoElement = ershoufangDetail.selectFirst("body > div.overview > div.content > div.aroundInfo");
-        ershoufang.setCommunityName(houseInfoElement.selectFirst("div.communityName > a.info").ownText());
+        ershoufang.setCommunityName(aroundInfoElement.selectFirst("div.communityName > a.info").ownText());
         Ershoufang.Location location = new Ershoufang.Location();
         location.setDistrict(aroundInfoElement.selectFirst("div.areaName > span.info > a:nth-child(1)").ownText());
         location.setRoad(aroundInfoElement.selectFirst("div.areaName > span.info > a:nth-child(2)").ownText());
@@ -63,8 +65,8 @@ public class ErshoufangDetailPageProcessor implements SubPageProcessor {
                 case "装修情况": base.setDecoration(element.ownText()); break;
                 case "梯户比例": base.setLadderHouseholdProportion(element.ownText()); break;
                 case "配备电梯": base.setElevator(element.ownText()); break;
-                case "产权年限": base.setPropertyRight(Float.parseFloat(element.ownText().replace("年", ""))); break;
-                default: log.info("基本属性{}不需要抽取", element.ownText());
+                case "产权年限": base.setPropertyRight(Integer.parseInt(element.ownText().replace("年", ""))); break;
+                default: log.info("基本属性\"{}\"不需要抽取", element.selectFirst("span").ownText());
             }
         });
 
@@ -98,13 +100,14 @@ public class ErshoufangDetailPageProcessor implements SubPageProcessor {
                         transaction.setMortgage(element.ownText());
                         break;
                     default:
-                        log.info("交易属性{}不需要抽取", element.ownText());
+                        log.info("交易属性\"{}\"不需要抽取", element.selectFirst("span").ownText());
                 }
             } catch (ParseException e) {
-                log.error("交易属性{}的日期格式不对", element.selectFirst("span").ownText());
+                log.error("交易属性\"{}\"=\"{}\"的日期格式不对",
+                        element.selectFirst("span").ownText(), element.ownText());
             }
         });
-        ershoufang.setBase(base);
+        ershoufang.setTransaction(transaction);
 
         page.putField("ershoufang", ershoufang);
         return MatchOther.NO;
@@ -112,6 +115,12 @@ public class ErshoufangDetailPageProcessor implements SubPageProcessor {
 
     @Override
     public boolean match(Request page) {
-        return !page.getUrl().contains("/rs/");
+        boolean isMatch = page.getUrl().matches("https://cq.lianjia.com/ershoufang/[0-9]+\\.html");
+
+        if (isMatch) {
+            log.info("url\"{}\"为二手房详情页，抽取该页二手房数据", page.getUrl());
+        }
+
+        return isMatch;
     }
 }

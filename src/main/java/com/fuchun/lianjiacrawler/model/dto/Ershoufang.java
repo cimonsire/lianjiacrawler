@@ -1,10 +1,12 @@
 package com.fuchun.lianjiacrawler.model.dto;
 
 import lombok.Data;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 
 @Data
+@Document
 public class Ershoufang {
 
     private float price;
@@ -74,7 +76,7 @@ public class Ershoufang {
 
         private String elevator;
 
-        private float propertyRight;
+        private int propertyRight;
     }
 
     @Data

@@ -2,12 +2,14 @@ package com.fuchun.lianjiacrawler.crawler.downloader;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
+import org.springframework.stereotype.Component;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Request;
 import us.codecraft.webmagic.Task;
 import us.codecraft.webmagic.downloader.Downloader;
 import us.codecraft.webmagic.selector.PlainText;
 
+@Component
 public class ErshoufangListPageDownloader implements Downloader {
 
     @Override
